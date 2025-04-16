@@ -3,17 +3,15 @@ body {
   background-color: #f7f9fc;
   margin: 0;
   padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: start;
-  min-height: 100vh;
 }
 
 .container {
-  max-width: 400px;
-  margin-top: 5vh;
-  padding: 20px;
-  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 20px;
+  gap: 30px;
 }
 
 .card {
@@ -65,4 +63,51 @@ button:hover {
 
 .status.error {
   color: #d12c2c;
+}
+
+#searchResults {
+  margin-top: 30px;
+}
+
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.photo-card img {
+  width: 150px;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.1);
+}
+
+.page-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  padding: 40px 20px;
+}
+
+.section {
+  flex: 1 1 350px;
+  max-width: 420px;
+}
+
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.photo-card img {
+  width: 150px;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.1);
 }
