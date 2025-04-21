@@ -1,12 +1,27 @@
+// === Initialize SDK ===
+const apigClient = apigClientFactory.newClient({
+  apiKey: 'N6eV67GB0PaygKEjCSZXm3O9eenRAKhN12pdDwMl',
+  accessKey: '',
+  secretKey: '',
+  sessionToken: '',
+  region: 'us-east-2', // match your API region
+  defaultContentType: 'application/json',
+  defaultAcceptType: 'application/json'
+});
+
+
+console.log("apigClient loaded:", typeof apigClientFactory);
+
+
 // UUID generator (v4-style)
 function getUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-      const r = Math.random() * 16 | 0;
-      const v = c === 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
-  }
-  
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
 // === Upload Handler ===
 document.getElementById('uploadForm').onsubmit = async (e) => {
   e.preventDefault();
@@ -22,31 +37,43 @@ document.getElementById('uploadForm').onsubmit = async (e) => {
 
   const extension = file.name.split('.').pop();
   const objectKey = `photo-${getUUID()}.${extension}`;
-  const uploadUrl = `https://qrugrpzgh6.execute-api.us-east-2.amazonaws.com/dev/upload/${objectKey}`;
 
   statusEl.style.display = "block";
   statusEl.textContent = "Uploading...";
   statusEl.className = "status uploading";
 
-  try {
-    const res = await fetch(uploadUrl, {
-      method: 'PUT',
-      headers: {
-        'x-api-key': 'N6eV67GB0PaygKEjCSZXm3O9eenRAKhN12pdDwMl',
-        'x-amz-meta-customLabels': customLabels,
-      },
-      body: file
-    });
+  const reader = new FileReader();
 
-    statusEl.textContent = res.ok
-      ? "✅ Upload successful!"
-      : "❌ Upload failed. Please try again.";
-    statusEl.className = res.ok ? "status success" : "status error";
-  } catch (error) {
-    console.error(error);
-    statusEl.textContent = "❌ Error occurred during upload.";
-    statusEl.className = "status error";
-  }
+  reader.onload = async function () {
+    const base64Data = reader.result.split(',')[1]; // remove data URI prefix
+
+    const params = {
+      objectKey: objectKey,
+      'x-amz-meta-customLabels': customLabels,
+    };
+
+    const body = base64Data;
+
+    const additionalParams = {
+      headers: {
+        'Content-Type': file.type,
+        'x-amz-meta-customLabels': customLabels
+      }
+    };
+
+    try {
+      const res = await apigClient.uploadObjectKeyPut(params, body, additionalParams);
+
+      statusEl.textContent = "✅ Upload successful!";
+      statusEl.className = "status success";
+    } catch (error) {
+      console.error("Upload error:", error);
+      statusEl.textContent = "❌ Upload failed. Please try again.";
+      statusEl.className = "status error";
+    }
+  };
+
+  reader.readAsDataURL(file); // triggers reader.onload
 };
 
 // === Search Handler ===
@@ -59,13 +86,12 @@ document.getElementById('searchForm').onsubmit = async (e) => {
   if (!query) return;
 
   try {
-    const response = await fetch(`https://qrugrpzgh6.execute-api.us-east-2.amazonaws.com/dev/search?q=${encodeURIComponent(query)}`, {
-      method: 'GET',
-      headers: {
-        'x-api-key': 'N6eV67GB0PaygKEjCSZXm3O9eenRAKhN12pdDwMl',
-      }
-    });
-    const data = await response.json();
+    const params = { q: query };
+    const body = {};
+    const additionalParams = {};
+
+    const response = await apigClient.searchGet(params, body, additionalParams);
+    const data = response.data;
 
     if (data.results && data.results.length > 0) {
       const photos = data.results.map(photo => `
@@ -81,5 +107,3 @@ document.getElementById('searchForm').onsubmit = async (e) => {
     resultsEl.textContent = "❌ Error while searching.";
   }
 };
-
-  
