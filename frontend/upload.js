@@ -35,13 +35,13 @@ document.getElementById('uploadForm').onsubmit = async (e) => {
     return;
   }
 
-  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-  if (!allowedTypes.includes(file.type)) {
-    alert("Unsupported file format. Please upload a JPG or PNG image.");
+  // Validate file type
+  if (!file.type.startsWith('image/')) {
+    alert("Please select an image file.");
     return;
   }
 
-  const extension = file.name.split('.').pop();
+  const extension = file.name.split('.').pop().toLowerCase();
   const objectKey = `photo-${getUUID()}.${extension}`;
 
   statusEl.style.display = "block";
@@ -51,18 +51,16 @@ document.getElementById('uploadForm').onsubmit = async (e) => {
   const reader = new FileReader();
 
   reader.onload = async function () {
-    const base64Data = reader.result.split(',')[1]; // Remove data URI prefix
+    const body = reader.result.split(',')[1]; // Remove data URI prefix
 
     const params = {
       objectKey: objectKey,
       'x-amz-meta-customLabels': customLabels
     };
 
-    const body = base64Data;
-
     const additionalParams = {
       headers: {
-        'Content-Type': 'text/plain', // Send as text so API Gateway can convert
+        'Content-Type': 'text/plain',
         'x-amz-meta-customLabels': customLabels,
       }
     };
