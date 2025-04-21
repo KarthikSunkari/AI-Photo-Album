@@ -1,10 +1,10 @@
 // === Initialize SDK ===
 const apigClient = apigClientFactory.newClient({
-  apiKey: 'N6eV67GB0PaygKEjCSZXm3O9eenRAKhN12pdDwMl',
+  apiKey: '8XVBs9wPaiwN5zXXRNPG3FN4w5QYVro5CTXqAYR6',
   accessKey: '',
   secretKey: '',
   sessionToken: '',
-  region: 'us-east-2', // match your API region
+  region: 'us-east-1',
   defaultContentType: 'application/json',
   defaultAcceptType: 'application/json'
 });
@@ -92,11 +92,12 @@ document.getElementById('searchForm').onsubmit = async (e) => {
 
     const response = await apigClient.searchGet(params, body, additionalParams);
     const data = response.data;
+    console.log(data);
 
-    if (data.results && data.results.length > 0) {
-      const photos = data.results.map(photo => `
+    if (data && data.length > 0) {
+      const photos = data.map(photo => `
         <div class="photo-card">
-          <img src="${photo.url}" alt="photo" />
+          <img src="https://${photo.bucket}.s3.amazonaws.com/${photo.objectKey}" alt="photo" />
         </div>`).join('');
       resultsEl.innerHTML = `<div class="gallery">${photos}</div>`;
     } else {
