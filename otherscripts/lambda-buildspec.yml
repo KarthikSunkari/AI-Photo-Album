@@ -1,0 +1,20 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing AWS CLI...
+      - pip install --upgrade awscli
+
+  build:
+    commands:
+      - echo Zipping Lambda code...
+      - zip index-photos.zip lambdafunctions/LF1-index-photos/lambda_function.py
+      - zip search-photos.zip lambdafunctions/LF2-search-photos/lambda_function.py
+
+  post_build:
+    commands:
+      - echo Updating LF1-index-photos Lambda...
+      - aws lambda update-function-code --function-name LF1-index-photos --zip-file fileb://index-photos.zip
+      - echo Updating LF2-search-photos Lambda...
+      - aws lambda update-function-code --function-name LF2-search-photos --zip-file fileb://search-photos.zip
