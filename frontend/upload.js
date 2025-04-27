@@ -98,12 +98,13 @@ document.getElementById('searchForm').onsubmit = async (e) => {
     const data = response.data;
     console.log(data);
 
-    if (data && data.length > 0) {
-      const photos = data.map(photo => `
-        <div class="photo-card">
+    if (data.results && data.results.length > 0) {
+      const photos = data.results.map(photo => `
+        <li><div class="photo-card">
           <img src="https://${photo.bucket}.s3.amazonaws.com/${photo.objectKey}" alt="photo" />
-        </div>`).join('');
-      resultsEl.innerHTML = `<div class="gallery">${photos}</div>`;
+          <span>${photo.labels.join(", ")}</span>
+        </div></li>`).join('');
+      resultsEl.innerHTML = `<div class="gallery"><ul>${photos}</ul></div>`;
     } else {
       resultsEl.textContent = "No photos found.";
     }

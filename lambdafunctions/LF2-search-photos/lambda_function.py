@@ -55,7 +55,7 @@ def lambda_handler(event, context):
     
     print(results)
 
-    return results
+    return { "results": results }
 
 
 def build_fuzzy_query(keywords):
