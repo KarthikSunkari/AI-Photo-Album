@@ -17,6 +17,7 @@ INDEX = 'photos'
 def lambda_handler(event, context):
     print("region = ", os.environ['AWS_REGION'])
     print(event)
+    print("something")
     for record in event['Records']:
         bucket = record['s3']['bucket']['name']
         key = urllib.parse.unquote_plus(record['s3']['object']['key'])
